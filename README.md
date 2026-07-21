@@ -1,19 +1,19 @@
 # GhostDDoS💻
-**GhostDDoS** this program is designed for DoS and DDoS attacks, designed to infect and destroy sites.
+**GhostDDoS** — эта программа предназначена для DoS- и DDoS-атак, направленных на заражение и уничтожение сайтов.
 
 ---
 
-## 🚀Features
+## 🚀Особенности
 
-- Multithreaded HTTP request sender
-- Customizable number of requests
-- Randomized user-agent headers
-- Clean command-line banner with colorized output
-- Selects optimal settings for attack
+- Многопоточный отправитель HTTP-запросов
+- Настраиваемое количество запросов
+- Рандомизированные заголовки user-agent
+- Чистый баннер командной строки с цветным выводом
+- Выбирает оптимальные настройки для атаки
 
 ---
 
-## 📦 Installation & Usage
+## 📦 Установка и использование
 ```bash
 git clone https://github.com/Ghostoraner/GhostDDoS.git
 cd GhostDDoS
@@ -24,9 +24,9 @@ python main.py
 ```
 ---
 
-## ✅ Conclusion
-- Author: Ghostoraner
-- Сommunication: reinsss21@gmail.com
+## ✅ Заключение
+- Автор: Ghostoraner
+- Связь: reinsss21@gmail.com
 
 ---
 
