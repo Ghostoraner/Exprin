@@ -1,5 +1,5 @@
-# GhostDDoS💻
-**GhostDDoS** — эта программа предназначена для DoS- и DDoS-атак, направленных на заражение и уничтожение сайтов.
+# Exprin 💻
+**Exprin** — эта программа предназначена для DoS- и DDoS-атак, направленных на заражение и уничтожение сайтов.
 
 ---
 
@@ -15,8 +15,8 @@
 
 ## 📦 Установка и использование
 ```bash
-git clone https://github.com/Ghostoraner/GhostDDoS.git
-cd GhostDDoS
+git clone https://github.com/Ghostoraner/Exprin.git
+cd Exprin
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
